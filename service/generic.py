@@ -1,12 +1,33 @@
 from collections import Counter
+import string
+import nltk
+import re
 import os
+
+nltk.download('stopwords')
+from nltk.corpus import stopwords
 
 class Generic:
     
     @staticmethod
+    def get_stopwords():
+        return set(stopwords.words('english'))
+    
+    @staticmethod
+    def clean_and_tokenize(messages: dict[str, list[str]]):
+        words = []
+        for msg in messages['user'] + messages['ai']:
+            msg = msg.lower()
+            msg = re.sub(rf"[{string.punctuation}]", "", msg)
+            tokens = msg.split()
+            words.extend([word for word in tokens if word not in Generic.get_stopwords()])
+        return words
+    
+    @staticmethod
     def keyword_analysis(messages: dict[str, list[str]], top_n: int =5):
-        all_msgs = messages['user'] + messages['ai']
-        return all_msgs
+        words = Generic.clean_and_tokenize(messages)
+        most_common = Counter(words).most_common(top_n)
+        return [word for word, _ in most_common]
     
     @staticmethod
     def prepare_summary(messages: dict[str, list[str]]):
