@@ -1,6 +1,25 @@
+from collections import Counter
 import os
 
 class Generic:
+    
+    @staticmethod
+    def keyword_analysis(messages: dict[str, list[str]], top_n: int =5):
+        all_msgs = messages['user'] + messages['ai']
+        return all_msgs
+    
+    @staticmethod
+    def prepare_summary(messages: dict[str, list[str]]):
+        total_messages = len(messages['user']) + len(messages['ai'])
+        keywords = Generic.keyword_analysis(messages)
+
+        summary = f"""
+                    Summary:
+                    - The conversation had {total_messages} exchanges.
+                    - The user asked mainly about {' and '.join(keywords[:2])} and related topics.
+                    - Most common keywords: {', '.join(keywords)}
+                    """
+        print(summary.strip())
     
     @staticmethod
     def parse_chat_log(lines: list[str]):
@@ -26,5 +45,5 @@ class Generic:
         file_response = Generic.read_file(path)
         if file_response['flag']:
             user_ai_messages = Generic.parse_chat_log(file_response['lines'])
-            print('user_ai_messages ', user_ai_messages)
+            Generic.prepare_summary(user_ai_messages)
         else: pass
