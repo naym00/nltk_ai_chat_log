@@ -3,6 +3,16 @@ import os
 class Generic:
     
     @staticmethod
+    def parse_chat_log(lines: list[str]):
+        messages = {'user': [], 'ai': []}
+        for line in lines:
+            if line.startswith("User:"):
+                messages['user'].append(line[5:].strip())
+            elif line.startswith("AI:"):
+                messages['ai'].append(line[3:].strip())
+        return messages
+    
+    @staticmethod
     def read_file(path: str):
         response = {'flag': True, 'lines': []}
         if os.path.exists(path):
@@ -15,6 +25,6 @@ class Generic:
     def generate_summary(path: str = './static/chat.txt'):
         file_response = Generic.read_file(path)
         if file_response['flag']:
-            pass
+            user_ai_messages = Generic.parse_chat_log(file_response['lines'])
+            print('user_ai_messages ', user_ai_messages)
         else: pass
-        print('file_response ', file_response)
